@@ -69,9 +69,9 @@ def get_degradation_url(file_name):
     )
 
 
-def get_image_url(file_name):
+def get_image_url(file_name, repo_path="deepinv/images"):
     return (
-        "https://huggingface.co/datasets/deepinv/images/resolve/main/"
+        f"https://huggingface.co/datasets/{repo_path}/resolve/main/"
         + file_name
         + "?download=true"
     )
@@ -137,7 +137,7 @@ def load_degradation(name, data_dir, index=0, download=True):
 
 
 def load_url_image(
-    url=None, img_size=None, grayscale=False, resize_mode="crop", device="cpu"
+    url=None, img_size=None, downsample=None, grayscale=False, resize_mode="crop", device="cpu"
 ):
     r"""
 
@@ -145,6 +145,7 @@ def load_url_image(
 
     :param str url: URL of the image file.
     :param int, tuple[int] img_size: Size of the image to return.
+    :param float downsample: Factor to downsample the image on each axis.
     :param bool grayscale: Whether to convert the image to grayscale.
     :param str resize_mode: If ``img_size`` is not None, options are ``"crop"`` or ``"resize"``.
     :param str device: Device on which to load the image (gpu or cpu).
@@ -154,6 +155,9 @@ def load_url_image(
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
     transform_list = []
+    if downsample is not None:
+        original_shape = np.array(np.array(img).shape[:2])
+        img_size = list(original_shape // downsample)
     if img_size is not None:
         if resize_mode == "crop":
             transform_list.append(transforms.CenterCrop(img_size))
