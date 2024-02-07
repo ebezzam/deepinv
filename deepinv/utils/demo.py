@@ -137,7 +137,12 @@ def load_degradation(name, data_dir, index=0, download=True):
 
 
 def load_url_image(
-    url=None, img_size=None, downsample=None, grayscale=False, resize_mode="crop", device="cpu"
+    url=None,
+    img_size=None,
+    downsample=None,
+    grayscale=False,
+    resize_mode="crop",
+    device="cpu",
 ):
     r"""
 
