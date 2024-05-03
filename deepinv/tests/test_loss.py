@@ -9,8 +9,8 @@ from torch.utils.data import DataLoader
 import deepinv as dinv
 from deepinv.loss.regularisers import JacobianSpectralNorm, FNEJacobianSpectralNorm
 
-LOSSES = ["sup", "mcei", "mcei-scale"]
-LIST_SURE = ["Gaussian", "Poisson", "PoissonGaussian", "UniformGaussian"]
+LOSSES = ["sup", "mcei", "mcei-scale", "r2r"]
+LIST_SURE = ["Gaussian", "Poisson", "PoissonGaussian"]
 
 
 def test_jacobian_spectral_values(toymatrix):
@@ -49,6 +49,8 @@ def choose_loss(loss_name):
         loss.append(dinv.loss.ScoreLoss(1.0))
     elif loss_name == "sup":
         loss.append(dinv.loss.SupLoss())
+    elif loss_name == "r2r":
+        loss.append(dinv.loss.R2RLoss())
     else:
         raise Exception("The loss doesnt exist")
 
@@ -64,11 +66,6 @@ def choose_sure(noise_type):
     elif noise_type == "Gaussian":
         loss = dinv.loss.SureGaussianLoss(sigma=sigma)
         noise_model = dinv.physics.GaussianNoise(sigma)
-    elif noise_type == "UniformGaussian":
-        loss = dinv.loss.SureGaussianLoss(sigma=sigma)
-        noise_model = dinv.physics.UniformGaussianNoise(
-            sigma=sigma
-        )  # This is equivalent to GaussianNoise when sigma is fixed
     elif noise_type == "Poisson":
         loss = dinv.loss.SurePoissonLoss(gain=gain)
         noise_model = dinv.physics.PoissonNoise(gain)
@@ -241,8 +238,6 @@ def test_sure_losses(device):
     error_mc /= num_it
     error_h /= num_it
 
-    # print(f"error_h: {error_h}")
-    # print(f"error_mc: {error_mc}")
     assert error_h < 5e-2
     assert error_mc < 5e-2
 

@@ -26,13 +26,16 @@ jobs:
           pip install -e .[denoisers,doc]
       - name: Install git repository optional dependencies
         run: |
-          pip install git+https://github.com/fbcotter/pytorch_wavelets.git
           python3 -m pip install https://github.com/odlgroup/odl/archive/master.zip
       - name: Run doctests
         run: |
-          find . -name '*.py' | xargs grep -l '>>>' | while read file; do
-            echo "Running doctests in $file"
-            python -m doctest -v "$file"
+          find . \( -name '*.py' -o -name '*.rst' \) | xargs grep -l '>>>' | while read file; do
+              if [[ "$file" != *.datasets.rst && "$file" != *.multigpu.rst ]]; then
+                  echo "Running doctests in $file"
+                  python -m doctest -v "$file"
+              else
+                  echo "Skipping file: $file"
+              fi
           done
       - name: Sphinx build
         run: |
