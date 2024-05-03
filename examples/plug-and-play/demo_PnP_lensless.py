@@ -27,7 +27,7 @@ downsample = 2
 repo_path = "bezzam/DiffuserCam-Lensless-Mirflickr-Dataset"
 grayscale = False
 
-url = get_image_url("psf.png", repo_path=repo_path)
+url = get_image_url("psf.tiff", repo_path=repo_path)
 psf = load_url_image(
     # PSF is 4x larger than the image
     url=url,
@@ -85,7 +85,7 @@ verbose = True
 plot_metrics = True  # compute performance and convergence metrics along the algorithm, curved saved in RESULTS_DIR
 
 params_algo = {"stepsize": 1.0, "g_param": noise_level_img, "lambda": 0.01}
-max_iter = 100
+max_iter = 200
 early_stop = True
 
 # Select the data fidelity term
